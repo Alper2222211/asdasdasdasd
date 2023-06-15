@@ -1,0 +1,76 @@
+local library = loadstring(game:HttpGet('https://pastebinp.com/raw/vPWzQEC8'))()
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hum = char:FindFirstChildOfClass("Humanoid") or char:WaitForChild("Humanoid")
+local Achievements = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Achievements/Source.lua"))()
+
+if not fireproximityprompt then
+    local msg = Instance.new("Message",workspace)
+    msg.Text = "you have fireproximityprompt function bro get better executor"
+    task.wait(6)
+    msg:Destroy()
+    error("no prox") 
+end
+
+local flags = {
+    getcode = false
+}
+
+local window_misc = library.window("misc")
+
+window_misc.toggle("auto library code",false,function(val)
+    flags.getcode = val
+    
+    if val then
+        local function deciphercode()
+        local paper = char:FindFirstChild("LibraryHintPaper")
+        local hints = plr.PlayerGui:WaitForChild("PermUI"):WaitForChild("Hints")
+        
+        local code = {[1]="_",[2]="_",[3]="_",[4]="_",[5]="_"}
+            
+            if paper then
+                for i,v in pairs(paper:WaitForChild("UI"):GetChildren()) do
+                    if v:IsA("ImageLabel") and v.Name ~= "Image" then
+                        for i,img in pairs(hints:GetChildren()) do
+                            if img:IsA("ImageLabel") and img.Visible and v.ImageRectOffset == img.ImageRectOffset then
+                                local num = img:FindFirstChild("TextLabel").Text
+                                
+                                code[tonumber(v.Name)] = num 
+                            end
+                        end
+                    end
+                end 
+            end
+            
+            return code
+        end
+        
+        local addconnect
+        addconnect = char.ChildAdded:Connect(function(v)
+            if v:IsA("Tool") and v.Name == "LibraryHintPaper" then
+                task.wait()
+                
+                local code = table.concat(deciphercode())
+                
+                if code:find("_") then
+                    Achievements.Get({
+                        Title = "Library",
+                            Desc   = "Get All Hints Bro",
+                            Reason = "Get All Hints Bro",
+                            Image  = "",
+                })
+                else
+                    Achievements.Get({
+                        Title = "Library",
+                            Desc   = "Code Is"..  code,
+                            Reason = "",
+                            Image  = "",
+                })
+                end
+            end
+        end)
+        
+        repeat task.wait() until not flags.getcode
+        addconnect:Disconnect()
+    end
+end)
